@@ -1,6 +1,6 @@
 # Fyre-Bill
 Ai Writer
-https://g.co/gemini/share/da75a8afe390
+
 # 🔥 FYRE Bill Platform
 
 FYRE Bill is an **AI-powered civic engagement tool** that empowers everyday citizens to draft, understand, and advance legislative bills.  
