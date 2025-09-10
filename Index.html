@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FYRE Bill - Citizen Lawmaking Platform</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #ff6f61;
+      --secondary-color: #3a2e39;
+      --text-color: #ffffff;
+      --bg-gradient: linear-gradient(135deg, #0f0f0f 0%, #1a0a00 50%, #2d1b00 100%);
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --border-radius: 12px;
+      --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2.5rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+
+    #billForm {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #billTopic {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #billTopic:focus {
+      border-color: var(--primary-color);
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--text-color);
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #d15649;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      background-color: #888;
+      cursor: not-allowed;
+    }
+
+    .bill-output-container {
+      text-align: left;
+      margin-top: 2rem;
+    }
+
+    .bill-output-container h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+
+    #billOutput {
+      min-height: 200px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: var(--secondary-color);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      z-index: 1000;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content {
+      color: var(--text-color);
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FYRE Bill 🔥</h1>
+    <p class="tagline">Citizen Lawmaking Platform with AI</p>
+
+    <form id="billForm">
+      <input type="text" id="billTopic" placeholder="Enter a topic for your bill (e.g., 'solar energy tax credits')" required />
+      <button type="submit" id="generateBtn">Generate Bill Draft</button>
+    </form>
+
+    <div class="bill-output-container">
+      <h2>Generated Bill</h2>
+      <div id="billOutput">
+        <p class="bill-content">Your generated bill draft will appear here...</p>
+      </div>
+      <div class="button-group">
+        <button id="copyBtn" style="display: none;">Copy</button>
+        <button id="downloadBtn" style="display: none;">Download as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusModal" class="modal">
+    <div class="modal-content"></div>
+  </div>
+
+  <script>
+    window.jsPDF = window.jspdf.jsPDF;
+
+    const form = document.getElementById('billForm');
+    const topicInput = document.getElementById('billTopic');
+    const generateBtn = document.getElementById('generateBtn');
+    const billOutput = document.getElementById('billOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const modal = document.getElementById('statusModal');
+    const modalContent = modal.querySelector('.modal-content');
+
+    const showModal = (message) => {
+      modalContent.textContent = message;
+      modal.style.display = 'block';
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 3000);
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const topic = topicInput.value;
+      if (!topic) return;
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+      billOutput.innerHTML = '<p class="bill-content">Generating bill...</p>';
+      copyBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
+
+      const prompt = `Act as a legislative drafter and write a simple legislative bill based on the following topic. The bill should have a short title and at least three sections. The sections should be clearly numbered (SECTION 1, SECTION 2, etc.) and have clear, professional language.
+
+Topic: ${topic}`;
+
+      try {
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+        };
+        const apiKey = 'AIzaSyA_4xuKCY3TmFst_u0Ky6wSiw-QWvr94O8';
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            throw new Error(`API response error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (generatedText) {
+          billOutput.innerHTML = `<p class="bill-content">${generatedText}</p>`;
+          copyBtn.style.display = 'inline-block';
+          downloadBtn.style.display = 'inline-block';
+          showModal('Bill draft generated!');
+        } else {
+          showModal('No content returned from API. Please try again.');
+        }
+
+      } catch (error) {
+        console.error('Error generating bill:', error);
+        billOutput.innerHTML = `<p class="bill-content" style="color: #ff6f61;">Error: ${error.message}. Check the console for details.</p>`;
+        showModal('An error occurred. Please try again.');
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate Bill Draft';
+      }
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = billOutput.querySelector('.bill-content');
+      if (!textToCopy) {
+        showModal('No content to copy.');
+        return;
+      }
+
+      navigator.clipboard.writeText(textToCopy.innerText)
+        .then(() => showModal('Bill draft copied to clipboard!'))
+        .catch(err => {
+          console.error('Could not copy text: ', err);
+          showModal('Failed to copy. Please try again.');
+        });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const textToDownload = billOutput.innerText;
+      if (!textToDownload || textToDownload === 'Your generated bill draft will appear here...' || textToDownload.includes('Generating')) {
+        showModal('No content to download.');
+        return;
+      }
+
+      const doc = new jsPDF();
+      doc.setFontSize(12);
+      const textLines = doc.splitTextToSize(textToDownload, 180);
+      doc.text(textLines, 10, 10);
+      doc.save("FYRE_Bill_Draft.pdf");
+      showModal('Bill draft downloaded as PDF!');
+    });
+  </script>
+</body>
+</html>
