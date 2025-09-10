@@ -1,303 +1,278 @@
+html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FYRE Bill - Citizen Lawmaking Platform</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FYRE Bill 🔥</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    :root {
-      --primary-color: #ff6f61;
-      --secondary-color: #3a2e39;
-      --text-color: #ffffff;
-      --bg-gradient: linear-gradient(135deg, #0f0f0f 0%, #1a0a00 50%, #2d1b00 100%);
-      --card-bg: rgba(255, 255, 255, 0.05);
-      --border-radius: 12px;
-      --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-color);
-      min-height: 100vh;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 900px;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 2.5rem;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      color: var(--primary-color);
-      text-shadow: 1px 1px 2px #000;
-    }
-
-    .tagline {
-      font-size: 1rem;
-      margin-bottom: 2rem;
-      opacity: 0.8;
-    }
-
-    #billForm {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    #billTopic {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--border-radius);
-      color: var(--text-color);
-      outline: none;
-      transition: border-color 0.3s;
-    }
-
-    #billTopic:focus {
-      border-color: var(--primary-color);
-    }
-
-    button {
-      padding: 12px 24px;
-      font-size: 1rem;
-      font-weight: bold;
-      color: var(--text-color);
-      background-color: var(--primary-color);
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background-color: #d15649;
-      transform: translateY(-2px);
-    }
-
-    button:disabled {
-      background-color: #888;
-      cursor: not-allowed;
-    }
-
-    .bill-output-container {
-      text-align: left;
-      margin-top: 2rem;
-    }
-
-    .bill-output-container h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid var(--primary-color);
-      padding-bottom: 0.5rem;
-      color: var(--primary-color);
-    }
-
-    #billOutput {
-      min-height: 200px;
-      background-color: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--border-radius);
-      padding: 1.5rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      line-height: 1.6;
-      font-size: 0.95rem;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: var(--secondary-color);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 2rem;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      z-index: 1000;
-      display: none;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    .modal-content {
-      color: var(--text-color);
-      text-align: center;
-      font-size: 1.1rem;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translate(-50%, -60%); }
-      to { opacity: 1; transform: translate(-50%, -50%); }
+      font-family: 'Inter', sans-serif;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>FYRE Bill 🔥</h1>
-    <p class="tagline">Citizen Lawmaking Platform with AI</p>
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
 
-    <form id="billForm">
-      <input type="text" id="billTopic" placeholder="Enter a topic for your bill (e.g., 'solar energy tax credits')" required />
-      <button type="submit" id="generateBtn">Generate Bill Draft</button>
-    </form>
+  <!-- Main Container -->
+  <div class="flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-4xl bg-gray-800 rounded-xl shadow-xl overflow-hidden">
+      <!-- Header -->
+      <header class="bg-gradient-to-r from-red-600 to-orange-500 text-white text-center p-6 sm:p-8 rounded-t-xl">
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">🔥 FYRE Bill Platform</h1>
+        <p class="mt-2 text-sm sm:text-base opacity-90">By FYRE Army | Lead Developer: <a href="https://github.com/CryptoHighway84" target="_blank" class="text-white underline hover:opacity-80 transition">CryptoHighway84</a></p>
+      </header>
 
-    <div class="bill-output-container">
-      <h2>Generated Bill</h2>
-      <div id="billOutput">
-        <p class="bill-content">Your generated bill draft will appear here...</p>
-      </div>
-      <div class="button-group">
-        <button id="copyBtn" style="display: none;">Copy</button>
-        <button id="downloadBtn" style="display: none;">Download as PDF</button>
+      <!-- Navigation -->
+      <nav class="bg-gray-700 p-2 sm:p-4 flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+        <button id="writer-button" class="px-4 py-2 text-red-400 border border-red-400 rounded-md hover:bg-red-400 hover:text-white transition-colors duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">Bill Writer</button>
+        <button id="edu-button" class="px-4 py-2 text-red-400 border border-red-400 rounded-md hover:bg-red-400 hover:text-white transition-colors duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">Education Hub</button>
+        <button id="reps-button" class="px-4 py-2 text-red-400 border border-red-400 rounded-md hover:bg-red-400 hover:text-white transition-colors duration-300 font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">Find Reps</button>
+      </nav>
+
+      <!-- Content Container -->
+      <div class="p-6">
+        <!-- Bill Writer Page -->
+        <div id="writer" class="page">
+          <h2 class="text-2xl font-bold mb-4">AI Bill Writer</h2>
+          <label for="state" class="block mb-2">Choose Your State:</label>
+          <select id="state" class="w-full p-3 mb-4 rounded-md bg-gray-700 border-2 border-gray-600 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors">
+            <option value="Alabama">Alabama</option>
+            <option value="Alaska">Alaska</option>
+            <option value="Arizona">Arizona</option>
+            <option value="Arkansas">Arkansas</option>
+            <option value="California">California</option>
+            <option value="Colorado">Colorado</option>
+            <option value="Connecticut">Connecticut</option>
+            <option value="Delaware">Delaware</option>
+            <option value="Florida">Florida</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Hawaii">Hawaii</option>
+            <option value="Idaho">Idaho</option>
+            <option value="Illinois">Illinois</option>
+            <option value="Indiana">Indiana</option>
+            <option value="Iowa">Iowa</option>
+            <option value="Kansas">Kansas</option>
+            <option value="Kentucky">Kentucky</option>
+            <option value="Louisiana">Louisiana</option>
+            <option value="Maine">Maine</option>
+            <option value="Maryland">Maryland</option>
+            <option value="Massachusetts">Massachusetts</option>
+            <option value="Michigan">Michigan</option>
+            <option value="Minnesota">Minnesota</option>
+            <option value="Mississippi">Mississippi</option>
+            <option value="Missouri">Missouri</option>
+            <option value="Montana">Montana</option>
+            <option value="Nebraska">Nebraska</option>
+            <option value="Nevada">Nevada</option>
+            <option value="New Hampshire">New Hampshire</option>
+            <option value="New Jersey">New Jersey</option>
+            <option value="New Mexico">New Mexico</option>
+            <option value="New York">New York</option>
+            <option value="North Carolina">North Carolina</option>
+            <option value="North Dakota">North Dakota</option>
+            <option value="Ohio">Ohio</option>
+            <option value="Oklahoma">Oklahoma</option>
+            <option value="Oregon">Oregon</option>
+            <option value="Pennsylvania">Pennsylvania</option>
+            <option value="Rhode Island">Rhode Island</option>
+            <option value="South Carolina">South Carolina</option>
+            <option value="South Dakota">South Dakota</option>
+            <option value="Tennessee">Tennessee</option>
+            <option value="Texas">Texas</option>
+            <option value="Utah">Utah</option>
+            <option value="Vermont">Vermont</option>
+            <option value="Virginia">Virginia</option>
+            <option value="Washington">Washington</option>
+            <option value="West Virginia">West Virginia</option>
+            <option value="Wisconsin">Wisconsin</option>
+            <option value="Wyoming">Wyoming</option>
+          </select>
+          <label for="topic" class="block mb-2">Bill Topic:</label>
+          <input type="text" id="topic" placeholder="Enter the main topic" class="w-full p-3 mb-4 rounded-md bg-gray-700 border-2 border-gray-600 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" />
+          <label for="details" class="block mb-2">Details:</label>
+          <textarea id="details" placeholder="Enter specifics, goals, or problems this bill addresses" class="w-full p-3 mb-4 rounded-md bg-gray-700 border-2 border-gray-600 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors h-32"></textarea>
+          <button id="generateBillButton" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 rounded-md text-white font-semibold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">Generate Bill</button>
+
+          <div id="billOutput" class="output mt-6 bg-gray-700 p-4 rounded-lg border border-gray-600 whitespace-pre-wrap"></div>
+
+          <div id="actionButtons" class="action-buttons mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+            <button id="copyBillButton" class="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-semibold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">Copy Bill</button>
+            <button id="downloadPdfButton" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white font-semibold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800">Download PDF</button>
+          </div>
+
+          <!-- New LLM Features -->
+          <div id="llm-features" class="mt-6 space-y-4 hidden">
+            <button id="summarizeButton" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 rounded-md text-white font-semibold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">✨ Summarize Bill</button>
+            <div id="summaryOutput" class="output mt-4 bg-gray-700 p-4 rounded-lg border border-gray-600 whitespace-pre-wrap hidden"></div>
+
+            <button id="draftLetterButton" class="w-full px-6 py-3 bg-red-600 hover:bg-red-700 rounded-md text-white font-semibold transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800">✨ Draft Letter to Rep</button>
+            <div id="letterOutput" class="output mt-4 bg-gray-700 p-4 rounded-lg border border-gray-600 whitespace-pre-wrap hidden"></div>
+          </div>
+        </div>
+
+        <!-- Education Hub Page -->
+        <div id="edu" class="page hidden">
+          <h2 class="text-2xl font-bold mb-4">Education Hub: Understanding the US Bill Process</h2>
+          <p class="mb-4">Navigating the legislative landscape is crucial for effective civic engagement. Here's a breakdown of how a bill becomes a law in the United States, along with your rights as a citizen in this process.</p>
+          <h3 class="text-xl font-semibold mb-2">The Bill Process: From Idea to Law</h3>
+          <ul class="list-disc list-inside space-y-2 mb-4">
+            <li><strong>Introduction:</strong> A bill can be introduced in either the House of Representatives or the Senate (except for revenue bills, which must originate in the House). A Member of Congress sponsors the bill.</li>
+            <li><strong>Committee Review:</strong> The bill is referred to the appropriate committee(s) for review. Committees may hold hearings, call witnesses, and propose amendments. If approved, the bill is sent to the full chamber.</li>
+            <li><strong>Floor Debate:</strong> The bill is debated by the full House or Senate. Amendments may be offered and voted upon.</li>
+            <li><strong>Voting:</strong> If the bill passes one chamber, it is sent to the other for consideration. Both chambers must agree on the same version of the bill. If there are differences, a conference committee is formed to reconcile them.</li>
+            <li><strong>Presidential Action:</strong> Once both chambers pass the identical bill, it is sent to the President. The President can sign it into law, veto it (which can be overridden by a two-thirds vote in both houses), or take no action (it becomes law if Congress is in session after 10 days, or is pocket vetoed if Congress adjourns).</li>
+          </ul>
+          <h3 class="text-xl font-semibold mb-2">Your Citizen Rights in the Legislative Process</h3>
+          <p class="mb-4">As a citizen, you have significant rights and avenues to participate in and influence the legislative process:</p>
+          <ul class="list-disc list-inside space-y-2">
+            <li><strong>Right to Petition:</strong> You have the right to petition your government for a redress of grievances, which includes proposing legislation.</li>
+            <li><strong>Contacting Representatives:</strong> You can contact your elected officials (Representatives and Senators) to express your views on pending legislation or suggest new laws.</li>
+            <li><strong>Tracking Legislation:</strong> You can monitor the progress of bills through Congress via official government websites (like Congress.gov) and other resources.</li>
+            <li><strong>Advocacy and Lobbying:</strong> You can engage in advocacy efforts, join interest groups, or even register as a lobbyist to influence lawmakers.</li>
+            <li><strong>Public Hearings:</strong> You may have the opportunity to testify at public hearings held by committees on specific bills.</li>
+          </ul>
+        </div>
+
+        <!-- Representative Finder Page -->
+        <div id="reps" class="page hidden">
+          <h2 class="text-2xl font-bold mb-4">Find & Contact Your Representatives</h2>
+          <p class="mb-4">This guide will help you find the correct contact information for your representatives and show you how to track the bills you care about.</p>
+
+          <div class="space-y-6">
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <h3 class="text-xl font-semibold mb-2">1. Find Your Federal Representatives</h3>
+              <p class="mb-4">To find your Representatives and Senators in the U.S. Congress, the most reliable way is to use the official government websites.</p>
+              <ul class="list-disc list-inside space-y-2">
+                <li><a href="https://www.house.gov/representatives/find-your-representative" target="_blank" class="text-red-400 hover:text-red-300 underline transition">Find your House Representative</a>: Enter your ZIP code to find your U.S. House Representative.</li>
+                <li><a href="https://www.senate.gov/senators/senators-contact.htm" target="_blank" class="text-red-400 hover:text-red-300 underline transition">Find your U.S. Senators</a>: This page provides a list of all U.S. Senators and their contact information.</li>
+              </ul>
+              <p class="mt-4 text-sm text-gray-400"><strong>Note:</strong> These websites are the most current and accurate sources for official contact information. Using a search engine to find a representative might lead to outdated or incorrect results.</p>
+            </div>
+
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <h3 class="text-xl font-semibold mb-2">2. Find Your State & Local Representatives</h3>
+              <p class="mb-4">State and local officials are just as important as federal representatives. They are often easier to reach and can have a more direct impact on your community.</p>
+              <ul class="list-disc list-inside space-y-2">
+                <li><strong>State Legislators:</strong> Use your state's official legislative website to find your representatives and senators. A quick search for "[Your State] Legislature" or "[Your State] elected officials" will get you to the right place.</li>
+                <li><strong>Local Officials:</strong> For your city mayor or county council members, visit your city's or county's official government website.</li>
+              </ul>
+              <p class="mt-4 text-sm text-gray-400"><strong>Tip:</strong> Call or email your representative's local office first. They are often more accessible and focused on constituent concerns than their Washington, D.C. office.</p>
+            </div>
+
+            <div class="bg-gray-700 p-4 rounded-lg">
+              <h3 class="text-xl font-semibold mb-2">3. Take Action with Your Bill</h3>
+              <p class="mb-4">You have a drafted bill. Now it's time to put it to use! Here are some final steps to take:</p>
+              <ul class="list-disc list-inside space-y-2">
+                <li><strong>Introduce Yourself:</strong> When you contact your representative's office, state that you are a constituent and provide your name and address.</li>
+                <li><strong>Be Concise & Clear:</strong> Briefly explain the issue and the purpose of your bill. The draft you created on this platform is a great starting point.</li>
+                <li><strong>Request a Meeting:</strong> Ask for a meeting with a legislative aide to discuss your proposed bill in detail.</li>
+                <li><strong>Share Your Story:</strong> Personal stories are powerful. Explain how the issue affects you or your community.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-gray-700 p-4 rounded-lg">
+            <h3 class="text-xl font-semibold mb-2">How to Track a Bill</h3>
+            <p class="mb-4">A live tracker isn't available, but you can easily follow a bill's progress using these steps:</p>
+            <ol class="list-decimal list-inside space-y-2">
+              <li><strong>Find the Bill Number:</strong> Once a bill is introduced, it is assigned a number (e.g., H.R. 101 for the House or S. 50 for the Senate). You can get this from your representative's office or a bill's official page.</li>
+              <li><strong>Visit Congress.gov:</strong> This is the official and most comprehensive website for federal legislative information. Use the search bar to find the bill number.</li>
+              <li><strong>Check the Status:</strong> The bill's page will show its current status, such as "Introduced," "Referred to Committee," "Passed the House," or "Signed by President."</li>
+              <li><strong>Read the Summary:</strong> The website provides summaries and full text of the bill so you can track any changes or amendments.</li>
+            </ol>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div id="statusModal" class="modal">
-    <div class="modal-content"></div>
-  </div>
+  <!-- Footer -->
+  <footer class="mt-auto py-4 text-center text-sm text-gray-400 bg-gray-950">
+    <p>FYRE Bill © 2025 | Built by FYRE Army 🔥</p>
+  </footer>
 
   <script>
-    window.jsPDF = window.jspdf.jsPDF;
-
-    const form = document.getElementById('billForm');
-    const topicInput = document.getElementById('billTopic');
-    const generateBtn = document.getElementById('generateBtn');
-    const billOutput = document.getElementById('billOutput');
-    const copyBtn = document.getElementById('copyBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const modal = document.getElementById('statusModal');
-    const modalContent = modal.querySelector('.modal-content');
-
-    const showModal = (message) => {
-      modalContent.textContent = message;
-      modal.style.display = 'block';
-      setTimeout(() => {
-        modal.style.display = 'none';
-      }, 3000);
-    };
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const topic = topicInput.value;
-      if (!topic) return;
-
-      generateBtn.disabled = true;
-      generateBtn.textContent = 'Generating...';
-      billOutput.innerHTML = '<p class="bill-content">Generating bill...</p>';
-      copyBtn.style.display = 'none';
-      downloadBtn.style.display = 'none';
-
-      const prompt = `Act as a legislative drafter and write a simple legislative bill based on the following topic. The bill should have a short title and at least three sections. The sections should be clearly numbered (SECTION 1, SECTION 2, etc.) and have clear, professional language.
-
-Topic: ${topic}`;
+    // --- API and Utility Functions (Securely integrated) ---
+    async function generateContent(prompt, systemInstruction) {
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=`; // NOTE: API key should be securely handled in a real application, not exposed like this.
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ google_search: {} }],
+        systemInstruction: { parts: [{ text: systemInstruction }] },
+      };
 
       try {
-        const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-        };
-        const apiKey = 'AIzaSyA_4xuKCY3TmFst_u0Ky6wSiw-QWvr94O8';
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-        const response = await fetch(apiUrl, {
+        let response = await fetch(apiUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         });
+
+        // Exponential backoff for retries
+        let retries = 0;
+        const maxRetries = 5;
+        const initialDelay = 1000;
+        while (!response.ok && response.status === 429 && retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, initialDelay * Math.pow(2, retries)));
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          retries++;
+        }
 
         if (!response.ok) {
-            throw new Error(`API response error: ${response.status} ${response.statusText}`);
+          throw new Error(`API call failed with status: ${response.status}`);
         }
 
-        const data = await response.json();
-        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (generatedText) {
-          billOutput.innerHTML = `<p class="bill-content">${generatedText}</p>`;
-          copyBtn.style.display = 'inline-block';
-          downloadBtn.style.display = 'inline-block';
-          showModal('Bill draft generated!');
-        } else {
-          showModal('No content returned from API. Please try again.');
+        const result = await response.json();
+        const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) {
+           // Check for "Blocked reason: SAFETY" in the response if text is empty
+           if (result?.promptFeedback?.blockReason === 'SAFETY') {
+               throw new Error('Content generation blocked due to safety policy.');
+           }
+           throw new Error('No content generated by the AI.');
         }
-
-      } catch (error) {
-        console.error('Error generating bill:', error);
-        billOutput.innerHTML = `<p class="bill-content" style="color: #ff6f61;">Error: ${error.message}. Check the console for details.</p>`;
-        showModal('An error occurred. Please try again.');
-      } finally {
-        generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate Bill Draft';
+        return text;
+      } catch (err) {
+        console.error('API Error:', err);
+        throw err;
       }
-    });
+    }
 
-    copyBtn.addEventListener('click', () => {
-      const textToCopy = billOutput.querySelector('.bill-content');
-      if (!textToCopy) {
-        showModal('No content to copy.');
-        return;
-      }
+    // --- Core App Logic ---
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      const el = document.getElementById(pageId);
+      if (el) el.classList.remove('hidden');
+    }
 
-      navigator.clipboard.writeText(textToCopy.innerText)
-        .then(() => showModal('Bill draft copied to clipboard!'))
-        .catch(err => {
-          console.error('Could not copy text: ', err);
-          showModal('Failed to copy. Please try again.');
-        });
-    });
+    // Global variable to store the last generated bill text
+    let lastGeneratedBill = '';
 
-    downloadBtn.addEventListener('click', () => {
-      const textToDownload = billOutput.innerText;
-      if (!textToDownload || textToDownload === 'Your generated bill draft will appear here...' || textToDownload.includes('Generating')) {
-        showModal('No content to download.');
-        return;
-      }
+    document.addEventListener('DOMContentLoaded', () => {
+      const stateEl = document.getElementById("state");
+      const topicEl = document.getElementById("topic");
+      const detailsEl = document.getElementById("details");
+      const generateButton = document.getElementById("generateBillButton");
+      const billOutputEl = document.getElementById("billOutput");
+      const copyButton = document.getElementById('copyBillButton');
+      const downloadButton = document.getElementById('downloadPdfButton');
+      const llmFeaturesEl = document.getElementById('llm-features');
+      const summarizeButton = document.getElementById('summarizeButton');
+      const summaryOutputEl = document.getElementById('summaryOutput');
+      const draftLetterButton = document.getElementById('draftLetterButton');
+      const letterOutputEl = document.getElementById('letterOutput');
 
-      const doc = new jsPDF();
-      doc.setFontSize(12);
-      const textLines = doc.splitTextToSize(textToDownload, 180);
-      doc.text(textLines, 10, 10);
-      doc.save("FYRE_Bill_Draft.pdf");
-      showModal('Bill draft downloaded as PDF!');
-    });
-  </script>
-</body>
-</html>
+      // Set up navigation listeners
+      document.getElementById('writer-button').addEventListener('click', () => showPage('writer'));
+      document.getElementById('edu-button').addEventListener('click', () => showPage('edu'));
+      document.getElementById('reps-button').addEventListener('click', () => showPage('reps'));
+
+      // Show default page on load
+      showPage('writer'
