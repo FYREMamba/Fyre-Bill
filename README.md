@@ -82,4 +82,6 @@ Lead Developer: CryptoHighway84
 ⚖️ License
 
 MIT License – free to use, modify, and distribute.
+
+Contact mambavidz@gmail.com 
 🔥 “Turning citizens into lawmakers.”
