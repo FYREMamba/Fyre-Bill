@@ -73,7 +73,7 @@ Roadmap
 
  Backend key management for security
 
-👤 Author
+👤 Author Matron Jade of FYRE Army
 
 Creator: FYRE Army
 
